@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour {
 	public float gravity = 3f;
 	public float jump_speed = 2f;
 
+	private int movementAngle = -45;
+
 	private float camRayLength = 1000f;     
 	private int floorMask;
  	private RaycastHit floorHit;
@@ -22,39 +24,22 @@ public class PlayerController : MonoBehaviour {
 	private GameObject playerModel;
 	private CharacterController charackterController;
 
-
-	// Use this for initialization
-	void Start () {
-		charackterController = gameObject.GetComponent<CharacterController> ();
-		floorMask = LayerMask.GetMask ("Floor");
-		playerModel = transform.Find("Model").gameObject;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		getInput ();
-		TurnModel ();
-
-		//DrawDebug ();
-	}
-
 	void DrawDebug () {
-		if(dbg){
+		if (dbg) {
 			dbg.transform.position = floorHit.point;
 		}
 	}
 
-	void Jump(){
+	void Jump () {
 		movement.y = jump_speed;
 		jump = false;
-
 	}
 
 	void Move () {
 		if (charackterController.isGrounded) {
 			movement.Set (horizontalInput, 0, verticalInput);
-			movement = transform.TransformDirection(movement);
 			movement = movement.normalized * speed * Time.deltaTime;
+			movement = Quaternion.AngleAxis(movementAngle, Vector3.up) * movement;
 			if (jump) {
 				Jump ();
 			}
@@ -64,33 +49,45 @@ public class PlayerController : MonoBehaviour {
 		charackterController.Move (movement);
 	}
 
-	void TurnModel () {
+	void Turn () {
 		Ray camRay = Camera.main.ScreenPointToRay (Input.mousePosition);
 
-		// Perform the raycast and if it hits something on the floor layer...
 		if(Physics.Raycast (camRay, out floorHit, camRayLength, floorMask))
 		{
-			// Create a vector from the player to the point on the floor the raycast from the mouse hit.
 			Vector3 playerToMouse = floorHit.point - transform.position;
-
-			// Ensure the vector is entirely along the floor plane.
 			playerToMouse.y = 0f;
-
-			// Create a quaternion (rotation) based on looking down the vector from the player to the mouse.
 			Quaternion newRotatation = Quaternion.LookRotation (playerToMouse);
 
-			playerModel.transform.rotation = newRotatation;
+			transform.rotation = newRotatation;
 		}
-	}
-
-	void FixedUpdate () {
-		Move ();
 	}
 
 	void getInput(){
 		horizontalInput = Input.GetAxis ("Horizontal");
 		verticalInput = Input.GetAxis ("Vertical");
 		jump = Input.GetButton("Jump");
+	}
+		
+	Quaternion getRotation(){
+		return transform.rotation;
+	}
+
+	// Use this for initialization
+	void Start () {
+		charackterController = gameObject.GetComponent<CharacterController> ();
+		floorMask = LayerMask.GetMask ("Floor");
+		playerModel = transform.Find("Model").gameObject;
+		Debug.Log (transform.rotation);
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		getInput ();
+		Turn ();
+	}
+		
+	void FixedUpdate () {
+		Move ();
 	}
 		
 }

@@ -9,12 +9,12 @@ public class PlayerShoot : MonoBehaviour {
 	private GameObject playerModel;
 
 	private bool shooting;
-	private bool ableToShoot = true;
 	private bool firePressed;
 	private float timePassed;
 
+	private float emmitionPositionOffset = 1f;
+
 	void Start(){
-		playerModel = transform.Find("Model").gameObject;
 	}
 		
 	void Update () {
@@ -23,18 +23,14 @@ public class PlayerShoot : MonoBehaviour {
 	}
 
 	void FireBullet(){
-
 		//TODO:
-		//Bullet firing should be handled by emmiter
-		//Rotation for player should be stored not in model
+		//Bullet firing should be handled by emmiter and bullet objects should be stored and retrieved by BulletObjectPool
 
-		Vector3 emmitingPosition = playerModel.transform.position;
-
-		Instantiate (bullet, emmitingPosition + playerModel.transform.forward * 1f, playerModel.transform.rotation);
+		Vector3 emmitionPosition = transform.position;
+		Instantiate (bullet, emmitionPosition + transform.forward * emmitionPositionOffset, transform.rotation);
 	}
 
 	void Shoot(){
-
 		timePassed += Time.deltaTime;
 		if(timePassed >= shootDelay){
 			if(firePressed){

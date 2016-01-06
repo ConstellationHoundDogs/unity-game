@@ -11,7 +11,4 @@ public class PlayerBulletController : MonoBehaviour {
 		rb = gameObject.GetComponent<Rigidbody> ();
 		rb.AddForce (transform.forward * speed);
 	}
-
-	void FixedUpdate () {
-	}
 }
