@@ -10,7 +10,6 @@ public class PlayerBulletController : MonoBehaviour {
 	void Start(){
 		rb = gameObject.GetComponent<Rigidbody> ();
 		rb.AddForce (transform.forward * speed);
-		Debug.Log ("Bullet fired");
 	}
 
 	void FixedUpdate () {
